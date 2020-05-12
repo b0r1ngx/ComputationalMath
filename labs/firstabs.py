@@ -103,7 +103,7 @@ def g(T):
     '''
     Function from inside of the integral
     '''
-    return numpy.abs(T ** 2 + T - 2) * -1
+    return numpy.abs(T ** 2 + T - 2) ** -1
 
 
 def f_quanc8(g, X):
