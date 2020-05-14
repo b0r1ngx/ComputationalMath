@@ -1,38 +1,28 @@
 import numpy
 import scipy.linalg as linalg
 
-
 def create_A(x, N):
     A = numpy.full((N, N), 1.1)
-
     for i in range(N):
         for j in range(N):
             A[i][j] = j + 1
-
     for it in range(N - 1):
         A[it + 1][it + 1] = x + 1
-
     return A
-
 
 def norm(N, R):
     temp = 0.0
     max = 0.0
-
     for i in range(N):
         temp = 0.0
-
         for j in range(N):
             temp += abs(R[i][j])
-
         if temp > max:
             max = temp
-
     return max
 
 def cond(N, A):
     return norm(N, A) * norm(N, linalg.inv(A))
-
 
 def solve_system(x, N):
     A = create_A(x, N)

@@ -1,14 +1,12 @@
 import numpy as np
 import scipy.linalg as linalg
 
-
 def matrix_C(d, rows, columns):
     C = np.full((rows, columns), 0.0)
     for i in rows:
         for k in columns:
             C[i][k] = d + np.log2(i * k) + np.cos(i * k)
     return C
-
 
 def norm(rows, columns, R):
     max_ = 0.0
@@ -21,10 +19,8 @@ def norm(rows, columns, R):
             max_ = temp
     return max_
 
-
 def cond(rows, columns, C):
     return norm(rows, columns, C) * norm(rows, columns, linalg.inv(C))
-
 
 def solve(d, rows, columns):
     C = matrix_C(d, rows, columns)
@@ -57,7 +53,6 @@ def solve(d, rows, columns):
     print('W = ', w)
     print('R = ', R)
     print()
-
 
 N = 5
 solve(10, N, N)
