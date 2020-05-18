@@ -12,7 +12,7 @@ def attemp():
         a.sort()
         for i in range(len(a) - 1):
             if a[i] < 0 and a[i + 1] < 0:
-            c = min(abs(x - a[i]), abs(x - a[i + 1]))
+                c = min(abs(x - a[i]), abs(x - a[i + 1]))
             if c <= dif:
                 dif = c
                 el_pos = i
