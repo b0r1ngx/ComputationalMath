@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/ComputationalMath.iml" filepath="$PROJECT_DIR$/.idea/ComputationalMath.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../Emperor/.idea/Emperor.iml" filepath="$PROJECT_DIR$/../Emperor/.idea/Emperor.iml" />
     </modules>
   </component>
 </project>

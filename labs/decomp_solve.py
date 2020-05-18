@@ -14,6 +14,7 @@ def create_matrix(n, d):
 for l in range(len(d)):
     C = np.zeros((N, N), dtype=np.float64)
     create_matrix(N, d[l])
+    print('Параметр d = {}'.format(d[l]))
     print('Матрица С:')
     print(C)
     print('Обратная матрица C:')
@@ -22,5 +23,4 @@ for l in range(len(d)):
     print('Матрица R:')
     R = np.eye(N) - invC * C
     print(R)
-    print('Норма матрицы R:')
-    print(linalg.norm(R, ord=1))
+    print('Норма матрицы R при d = {}:'.format(d[l]), linalg.norm(R, ord=np.inf))
