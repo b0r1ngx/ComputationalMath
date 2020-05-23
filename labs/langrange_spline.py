@@ -26,7 +26,7 @@ plot.plot(xk, Lx(xk), 'g-')
 plot.show()
 
 plot.title('S(x)')
-plot.plot(xk, Lx(xk), 'r-')
+plot.plot(xk, Sx(xk), 'r-')
 plot.show()
 # График совмещения всех заданных функций
 fig, ax = plot.subplots(figsize=(6.5, 4))
