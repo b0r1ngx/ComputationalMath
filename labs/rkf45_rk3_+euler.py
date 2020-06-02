@@ -25,8 +25,9 @@ def pick_step(function, a, b, step):
 #         X[it] = X[it - 1] + (h / 12) * (5 * f(T[it], X[it]) + 8 * f(T[it - 1], X[it - 1]) - f(T[it - 2], X[it - 2]))
 #     return X[:, 0]
 
+
 # Method Adams 3th.
-def adam(f, T, X0):
+def adams3(f, T, X0):
     X = np.zeros((len(T) + 2, len(X0)))
     X2 = np.zeros((len(T), len(X0)))
 
@@ -35,15 +36,34 @@ def adam(f, T, X0):
     X[0] = X987[2]
     X[1] = X987[1]
     X[2] = X0
+    # X[0] = X0
+    # X[1] = X0
+    # X[2] = X0
 
     for it in range(3, len(T) + 2):
-        X[it] = X[it - 1] + (h / 12.0) * (
-                23 * f(T[it - 3] - h, X[it - 1]) - 16 * f(T[it - 3] - 2 * h, X[it - 2]) + 5 * f(T[it - 3] - 3 * h,
-                                                                                                X[it - 3]))
+        X[it] = X[it - 1] + (h / 12.0) \
+                * (23 * f(T[it - 3], X[it - 1]) - 16 * f(T[it - 3], X[it - 2]) + 5 * f(T[it - 3], X[it - 3]))
     for it in range(0, len(T)):
         X2[it] = X[it + 2]
-
     return X2[:, 0]
+
+
+# Method Adams 2th - not work properly good.
+def adams2(f, T, X0):
+    X = np.zeros((len(T) + 1, len(X0)))
+    X1 = np.zeros((len(T), len(X0)))
+
+    h = T[1] - T[0]
+
+    X_extra = rkf45(f, [T[0], T[0] - h], X0)
+    X[0] = X_extra[1]
+    X[1] = X_extra[0]
+
+    for it in range(2, len(T) + 1):
+        X[it] = X[it - 1] + h / 2 * (3 * f(T[it - 1], X[it - 1]) - f(T[it - 2], X[it - 2]))
+    for it in range(0, len(T)):
+        X1[it] = X[it + 1]
+    return X1[:, 0]
 
 
 # Trapezoid Method
@@ -121,7 +141,8 @@ def exploring_with(step):
     X_rkf45 = rkf45(f, t, x0)
     X_euler = advanced_euler(f, t, x0)
     X_runge_kutta3 = runge_kutta3(f, t, x0)
-    X_adams3th = adam(f, t, x0)
+    X_adams3th = adams3(f, t, x0)
+    X_adams2th = adams2(f, t, x0)
     X_trapeze = trapeze(f, t, x0)
     # Graphs
     fig, ax = plot.subplots(figsize=(6.5, 5))
@@ -130,15 +151,22 @@ def exploring_with(step):
     ax.plot(t, X_rkf45, label='RKF45')
     ax.plot(t, X_runge_kutta3, label='RungeK3')
     ax.plot(t, X_euler, label='+Euler')
-    ax.plot(t, X_adams3th, label='Adams3th')
-    ax.plot(t, X_trapeze, label='Trapeze')
     ax.legend(loc='upper left', ncol=2)
+    plot.show()
+    # Test Graphs
+    plot.plot(t, y(t), 'o', label='1<=t<=2')
+    plot.plot(t, y(t), label='√2')
+    plot.plot(t, X_adams3th, label='Adams3th')
+    plot.plot(t, X_adams2th, label='Adams2th')
+    plot.plot(t, X_trapeze, label='Trapeze')
+    plot.legend(loc='upper left', ncol=2)
     plot.show()
     # Compute tolerances of every method of each point
     ltol_of_rkf45 = abs(X_rkf45 - X_original)
     ltol_of_euler = abs(X_euler - X_original)
     ltol_of_runge3 = abs(X_runge_kutta3 - X_original)
     ltol_of_adams3 = abs(X_adams3th - X_original)
+    ltol_of_adams2 = abs(X_adams2th - X_original)
     ltol_of_trapeze = abs(X_trapeze - X_original)
     # methods = ('RKF45', 'Runge-Kutta 3', '+Euler')
     # for i in range(len(methods)):
@@ -147,26 +175,32 @@ def exploring_with(step):
     print('Local tolerance of Euler:', ltol_of_euler[1])
     print('Local tolerance of Runge-Kutta 3th:', ltol_of_runge3[1])
     print('Local tolerance of Adams 3th:', ltol_of_adams3[1])
+    print('Local tolerance of Adams 2th:', ltol_of_adams2[1])
     print('Local tolerance of Trapeze:', ltol_of_trapeze[1])
     print('Global tolerance of RKF45:', ltol_of_rkf45.sum())
     print('Global tolerance of Euler:', ltol_of_euler.sum())
     print('Global tolerance of Runge-Kutta 3th:', ltol_of_runge3.sum())
     print('Global tolerance of Adams 3th:', ltol_of_adams3.sum())
+    print('Global tolerance of Adams 2th:', ltol_of_adams2.sum())
     print('Global tolerance of Trapeze:', ltol_of_trapeze.sum())
-    print('h={}^3 for Euler(2th order):'.format(step / 2), (step / 2) ** 3)
-    print('h={}^3 for Trapeze:'.format(step / 2), (step / 2) ** 3)
-    print('h={}^4 for RK3(3th order):'.format(step / 2), (step / 2) ** 4)
-    print('h={}^4 for Adams 3th:'.format(step / 2), (step / 2) ** 4)
+    print('h={}^3 for Euler(2th order):'.format(step), step ** 3)
+    print('h={}^4 for RK3(3th order):'.format(step), step ** 4)
+    print('h={}^4 for Adams 3th:'.format(step), step ** 4)
+    print('h={}^4 for Adams 2th:'.format(step), step ** 3)
+    print('h={}^3 for Trapeze:'.format(step), step ** 3)
 
     print('\t\tValues of each method of t points (inclusive):')
-    print(' t\t\ty(t)\t\t\tRKF45\t\t\t+Euler\t\tRunge Kutta 3')
+    print(' t\t\ty(t)\t\t\tRKF45\t\t\t+Euler\t\tRunge Kutta 3\t  Adams3th\t\t\tTrapeze')
     for i in range(1, len(t)):
-        print('{:0.1f}\t{:0.10f}\t{:0.10f}\t{:0.10f}\t{:0.10f}'
-              .format(t[i], X_original[i], X_rkf45[i], X_euler[i], X_runge_kutta3[i]))
+        print('{:0.1f}\t{:0.10f}\t{:0.10f}\t{:0.10f}\t{:0.10f}\t{:0.10f}\t{:0.10f}\t{:0.10f}'
+              .format(t[i], X_original[i], X_rkf45[i], X_euler[i], X_runge_kutta3[i], X_adams3th[i], X_adams2th[i], X_trapeze[i]))
     print()
 
 
 # Exploring with different step
+# exploring_with(step=0.5)
+exploring_with(step=0.25)
+exploring_with(step=0.2)
 exploring_with(step=0.1)
 exploring_with(step=0.05)
 exploring_with(step=0.025)
